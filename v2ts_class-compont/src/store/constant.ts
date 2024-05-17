@@ -1,0 +1,6 @@
+const SET_GOODS = 'SET_GOODS'
+
+const AXIOX_HANDLE = 'AXIOX_HANDLE'
+
+
+export { SET_GOODS, AXIOX_HANDLE }

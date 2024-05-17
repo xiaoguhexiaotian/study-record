@@ -12,5 +12,10 @@ class Goods {
     console.log(this.name)
   }
 }
+enum GoodsType {
+  Food = 1,
+  Clothes = 2,
+  Electronics = 3
+}
 
-export { Goods }
+export { Goods, GoodsType }
