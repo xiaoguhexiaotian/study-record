@@ -44,12 +44,13 @@ export default class AboutView extends Vue {
 }
 </script>
 
-<style lang="sass" scoped>
-.goods
-  border: 1px solid #000
-  padding: 10px
-  margin: 10px
-  span
-    padding-right: 20px
+<style lang="scss" scoped>
+.goods {
+  border: 1px solid #000;
+  padding: 10px;
+  margin: 10px;
+  span {
+    padding-right: 20px;
+  }
+}
 </style>
-
