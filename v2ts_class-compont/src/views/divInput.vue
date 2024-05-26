@@ -29,9 +29,35 @@ export default class DivInput extends Vue {
   pointIds = "";
   absentIds: number[] = [];
   repeatIds: number[] = [];
+  keepLastIndex(event: any) {
+    if (window.getSelection) {
+      event.focus();
+      var range = window.getSelection()!;
+      range.selectAllChildren(event);
+      range.collapseToEnd();
+    }
+  }
+  getCurrentSelectionDom() {
+    const selection = window.getSelection()!;
+    if (selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      const currentNode = range.startContainer;
+      return currentNode.parentElement;
+    }
+  }
   input(event: any) {
+    console.dir(event);
+    // const currentNode = this.getCurrentSelectionDom()!;
+    // if (currentNode.id !== "input") {
+    //   console.log("if");
+    //   const regex = /[^0-9,]/g;
+    //   const inputValue = currentNode.textContent!.replace(regex, "");
+    //   currentNode.textContent = inputValue;
+    //   console.log(event.target.innerText, "event.target.innerText");
+    // }
+    // this.keepLastIndex(currentNode);
     this.pointIds = event.target.innerText;
-    console.dir(event.target.innerText);
+    console.log(this.pointIds);
   }
   testAxios() {
     return new Promise(resolve => {
@@ -70,27 +96,53 @@ export default class DivInput extends Vue {
     }
   }
   handlePromptColor() {
-    const dom = document.querySelector("#input");
-    const childNodes = dom?.children || [];
+    const dom: any = document.querySelector("#input");
+    const childNodes = dom?.childNodes || [];
+    console.log(childNodes, 1);
     for (let i = 0; i < childNodes.length; i++) {
-      let node: any = childNodes[i];
-      // 这里不能直接用innerHTML 多次替换后节点后会发生异变,所以每次替换必须用初始值
-      let newInnerHtml = node!.innerText.replace(/\s/g, "");
+      const node = childNodes[i];
       const tempAbsentIds = this.absentIds.slice().sort((a, b) => b - a);
       for (let i = 0; i < this.repeatIds.length; i++) {
         const nodeData = this.repeatIds[i];
         const regex = new RegExp(String(nodeData), "g");
-        newInnerHtml = newInnerHtml.replace(regex, `<span class="warning">${nodeData}</span>`);
+        if (node.textContent) {
+          node.textContent = node.textContent.replace(
+            regex,
+            `<span class="warning">${nodeData}</span>`
+          );
+        }
       }
       for (let i = 0; i < tempAbsentIds.length; i++) {
         const nodeData = tempAbsentIds[i];
-        newInnerHtml = newInnerHtml.replace(
-          String(nodeData),
-          `<span class="error">${nodeData}</span>`
-        );
+        if (node.textContent) {
+          node.textContent = node.textContent.replace(
+            String(nodeData),
+            `<span class="error">${nodeData}</span>`
+          );
+        }
       }
-      node.innerHTML = newInnerHtml;
     }
+    // dom.innerHTML = dom.innerText;
+    // const childNodes = dom?.children || [];
+    // for (let i = 0; i < childNodes.length; i++) {
+    //   let node: any = childNodes[i];
+    //   // 这里不能直接用innerHTML 多次替换后节点后会发生异变,所以每次替换必须用初始值
+    //   let newInnerHtml = node!.innerText.replace(/\s/g, "");
+    //   const tempAbsentIds = this.absentIds.slice().sort((a, b) => b - a);
+    //   for (let i = 0; i < this.repeatIds.length; i++) {
+    //     const nodeData = this.repeatIds[i];
+    //     const regex = new RegExp(String(nodeData), "g");
+    //     newInnerHtml = newInnerHtml.replace(regex, `<span class="warning">${nodeData}</span>`);
+    //   }
+    //   for (let i = 0; i < tempAbsentIds.length; i++) {
+    //     const nodeData = tempAbsentIds[i];
+    //     newInnerHtml = newInnerHtml.replace(
+    //       String(nodeData),
+    //       `<span class="error">${nodeData}</span>`
+    //     );
+    //   }
+    //   node.innerHTML = newInnerHtml;
+    // }
   }
   init() {
     const dom: any = document.querySelector("#input");
@@ -100,18 +152,22 @@ export default class DivInput extends Vue {
   }
   mounted() {
     this.$nextTick(() => {
-      this.init();
-      this.handleEnter(); // 为什么要在初始化的时候换一次行,因为contenteditable首行是会直接把文本插入在父级节点中 不是创建一个子节点 所以为了方便替换文本，统一成 子节点的形式
+      // this.init();
+      // this.handleEnter(); // 为什么要在初始化的时候换一次行,因为contenteditable首行是会直接把文本插入在父级节点中 不是创建一个子节点 所以为了方便替换文本，统一成 子节点的形式
     });
   }
   handleEnter() {
-    // contenteditable节点在换行的时候，默认生成的div盒子是会继承兄弟盒子的样式和class的，所以这里监听enter事件获取当前光标处，清掉当前光标节点的样式
-    const selection: any = window.getSelection();
-    if (selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      const currentNode = range.commonAncestorContainer;
-      currentNode.className = "";
+    // contenteditable节点在换行的时候，默认生成的div盒子是会继承兄弟盒子的样式和class的，所以这里监听enter事件删除掉默认生成的盒子，重新建一个干净的盒子
+    console.log("enter");
+    const dom = document.querySelector("#input")!;
+    if (dom.lastChild) {
+      dom?.removeChild(dom.lastChild!);
     }
+    dom.innerHTML += `<br><br>`;
+    this.keepLastIndex(dom);
+    // const newDiv = document.createElement("div");
+    // newDiv.innerHTML = "<br>";
+    // dom.appendChild(newDiv);
   }
 }
 </script>
