@@ -2,14 +2,18 @@
   <div class="hello">
     son:
     <input v-model="name" />
-    {{list}}
+    {{ list }}
     <span>{{ count }}</span>
     <button @click="add">++</button>
     <button @click="minus">--</button>
     <button @click="handleEdit">子组件修改list</button>
     <button @click="childEmitOne">子组件触发emit</button>
     <button @click="childClick">子组件触发emit</button>
-    <Grandson />
+    <Grandson>
+      <template #windowParam="{ windowParam }">
+        <slot name="windowParam" :windowParam="windowParam"></slot>
+      </template>
+    </Grandson>
   </div>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div id="input" contenteditable @input="input" @keyup.enter="handleEnter"></div>
+    <div id="input" contenteditable @input="input"></div>
     <div class="footer">
       <div class="msg">
         <span v-if="absentIds.length > 0" class="error">
@@ -27,39 +27,52 @@ import { Component, Vue } from "vue-property-decorator";
 @Component
 export default class DivInput extends Vue {
   pointIds = "";
-  absentIds: number[] = [];
-  repeatIds: number[] = [];
-  keepLastIndex(event: any) {
-    if (window.getSelection) {
-      event.focus();
-      var range = window.getSelection()!;
-      range.selectAllChildren(event);
-      range.collapseToEnd();
+  absentIds: number[] | string[] = [];
+  repeatIds: number[] | string[] = [];
+  existIds: number[] | string[] = [];
+
+  cursorPosition: any = null; // 当前光标位置
+  saveCursorPosition() {
+    const editor = document.getElementById("input");
+    const selection = window.getSelection()!;
+    if (selection.rangeCount > 0) {
+      this.cursorPosition = selection.getRangeAt(0);
+      console.log(this.cursorPosition);
     }
   }
+  restoreCursorPosition() {
+    const editor = document.getElementById("input")!;
+    const selection = window.getSelection()!;
+    if (selection.rangeCount > 0) {
+      selection.removeAllRanges();
+      selection.addRange(this.cursorPosition);
+      editor.focus();
+    }
+  }
+
   getCurrentSelectionDom() {
     const selection = window.getSelection()!;
     if (selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
-      const currentNode = range.startContainer;
-      return currentNode.parentElement;
+      const currentNode: any = range.startContainer;
+      currentNode.parentElement.classList = [];
+      currentNode.parentElement.color = "";
     }
   }
   input(event: any) {
     console.dir(event);
-    // const currentNode = this.getCurrentSelectionDom()!;
-    // if (currentNode.id !== "input") {
-    //   console.log("if");
-    //   const regex = /[^0-9,]/g;
-    //   const inputValue = currentNode.textContent!.replace(regex, "");
-    //   currentNode.textContent = inputValue;
-    //   console.log(event.target.innerText, "event.target.innerText");
-    // }
-    // this.keepLastIndex(currentNode);
-    this.pointIds = event.target.innerText;
-    console.log(this.pointIds);
+    this.saveCursorPosition();
+    event.target.innerText = this.handleInput(event.target.innerText);
+    // this.pointIds = event.target.innerText;
+    // this.getCurrentSelectionDom();
+    this.$nextTick(() => {
+      this.restoreCursorPosition();
+    });
   }
-  testAxios() {
+  handleInput(value: string) {
+    return value.replace(/[^0-9,\n]/g, "");
+  }
+  testAxios(ids: any[]) {
     return new Promise(resolve => {
       setTimeout(() => {
         const list = [
@@ -75,99 +88,65 @@ export default class DivInput extends Vue {
             name: "王五",
             id: "789",
           },
-        ];
+        ].filter((i: any) => ids.findIndex((k: any) => i.id == k) !== -1);
         resolve(list);
       }, 1000);
     });
   }
+
   async handleAdd() {
     const tempIds = this.pointIds
       .split(/\n|,/)
       .map(i => Number(i.replace(/\s/g, "")))
       .filter(i => i && !isNaN(i));
+    const tempAllIds = this.pointIds.split(/\n|,/).map(i => i.replace(/\s/g, ""));
     try {
-      const res: any = await this.testAxios();
-      this.absentIds = tempIds.filter(item => !res.some((obj: any) => obj.id == item));
-      this.repeatIds = tempIds.filter((item, index) => tempIds.indexOf(item) != index);
+      const res: any = await this.testAxios(tempIds);
+      this.absentIds = tempAllIds.filter(item => !res.some((obj: any) => obj.id == item));
+      this.repeatIds = tempAllIds.filter((item: any, index) => tempAllIds.indexOf(item) != index);
+      this.existIds = res.map((i: any) => i.id);
       this.handlePromptColor();
-      console.log("repeatIds====>", this.repeatIds, "absentIds====>", this.absentIds);
+      console.log(
+        "repeatIds====>",
+        this.repeatIds,
+        "absentIds====>",
+        this.absentIds,
+        "this.existIds====>",
+        this.existIds
+      );
     } catch (error) {
       console.log(error);
     }
   }
   handlePromptColor() {
     const dom: any = document.querySelector("#input");
-    const childNodes = dom?.childNodes || [];
-    console.log(childNodes, 1);
-    for (let i = 0; i < childNodes.length; i++) {
-      const node = childNodes[i];
-      const tempAbsentIds = this.absentIds.slice().sort((a, b) => b - a);
-      for (let i = 0; i < this.repeatIds.length; i++) {
-        const nodeData = this.repeatIds[i];
-        const regex = new RegExp(String(nodeData), "g");
-        if (node.textContent) {
-          node.textContent = node.textContent.replace(
-            regex,
-            `<span class="warning">${nodeData}</span>`
-          );
+    const fisrtDom = dom.childNodes[0];
+    if (fisrtDom.nodeName === "#text") {
+      const newDiv = document.createElement("div");
+      newDiv.innerHTML = fisrtDom.textContent;
+      dom.removeChild(fisrtDom);
+      dom.insertBefore(newDiv, dom.firstChild);
+    }
+    const nodeChildren = dom.children || [];
+    for (let i = 0; i < nodeChildren.length; i++) {
+      const currentNode = nodeChildren[i];
+      const currenetNodeData = currentNode.innerText.split(",");
+      let tempInnerHtml = "";
+      for (let k = 0; k < currenetNodeData.length; k++) {
+        const nodeText = currenetNodeData[k];
+        if (this.repeatIds.findIndex(i => i == nodeText) !== -1) {
+          tempInnerHtml += `<span class="warning">${nodeText}</span>`;
+        } else if (this.absentIds.findIndex(i => i == nodeText) !== -1) {
+          tempInnerHtml += `<span class="error">${nodeText}</span>`;
+        } else if (this.existIds.findIndex(i => i == nodeText) !== -1) {
+          tempInnerHtml += `<span>${nodeText}</span>`;
+        }
+        if (k < currenetNodeData.length - 1) {
+          tempInnerHtml += ",";
         }
       }
-      for (let i = 0; i < tempAbsentIds.length; i++) {
-        const nodeData = tempAbsentIds[i];
-        if (node.textContent) {
-          node.textContent = node.textContent.replace(
-            String(nodeData),
-            `<span class="error">${nodeData}</span>`
-          );
-        }
-      }
+      currentNode.innerHTML = tempInnerHtml;
     }
-    // dom.innerHTML = dom.innerText;
-    // const childNodes = dom?.children || [];
-    // for (let i = 0; i < childNodes.length; i++) {
-    //   let node: any = childNodes[i];
-    //   // 这里不能直接用innerHTML 多次替换后节点后会发生异变,所以每次替换必须用初始值
-    //   let newInnerHtml = node!.innerText.replace(/\s/g, "");
-    //   const tempAbsentIds = this.absentIds.slice().sort((a, b) => b - a);
-    //   for (let i = 0; i < this.repeatIds.length; i++) {
-    //     const nodeData = this.repeatIds[i];
-    //     const regex = new RegExp(String(nodeData), "g");
-    //     newInnerHtml = newInnerHtml.replace(regex, `<span class="warning">${nodeData}</span>`);
-    //   }
-    //   for (let i = 0; i < tempAbsentIds.length; i++) {
-    //     const nodeData = tempAbsentIds[i];
-    //     newInnerHtml = newInnerHtml.replace(
-    //       String(nodeData),
-    //       `<span class="error">${nodeData}</span>`
-    //     );
-    //   }
-    //   node.innerHTML = newInnerHtml;
-    // }
-  }
-  init() {
-    const dom: any = document.querySelector("#input");
-    dom.focus();
-    const newDiv = document.createElement("div");
-    dom!.appendChild(newDiv);
-  }
-  mounted() {
-    this.$nextTick(() => {
-      // this.init();
-      // this.handleEnter(); // 为什么要在初始化的时候换一次行,因为contenteditable首行是会直接把文本插入在父级节点中 不是创建一个子节点 所以为了方便替换文本，统一成 子节点的形式
-    });
-  }
-  handleEnter() {
-    // contenteditable节点在换行的时候，默认生成的div盒子是会继承兄弟盒子的样式和class的，所以这里监听enter事件删除掉默认生成的盒子，重新建一个干净的盒子
-    console.log("enter");
-    const dom = document.querySelector("#input")!;
-    if (dom.lastChild) {
-      dom?.removeChild(dom.lastChild!);
-    }
-    dom.innerHTML += `<br><br>`;
-    this.keepLastIndex(dom);
-    // const newDiv = document.createElement("div");
-    // newDiv.innerHTML = "<br>";
-    // dom.appendChild(newDiv);
   }
 }
 </script>

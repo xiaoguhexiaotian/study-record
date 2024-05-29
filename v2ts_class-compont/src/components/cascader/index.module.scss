@@ -1,0 +1,38 @@
+.window-param-select {
+  background-color: red;
+  :global {
+    .el-cascader {
+      width: 80px;
+    }
+  }
+}
+:global {
+  .window-param-select-popper {
+    .el-cascader-panel {
+      .el-cascader-menu {
+        .el-cascader-node {
+          > .el-checkbox {
+            display: none;
+          }
+        }
+      }
+      .el-cascader-node {
+        padding: 0;
+        .el-checkbox {
+          padding-left: 10px;
+          .el-checkbox__label {
+            padding: 0;
+          }
+        }
+        .el-cascader-node__label {
+          padding: 0;
+          .node-name {
+            display: inline-block;
+            width: 100%;
+            padding: 0 10px;
+          }
+        }
+      }
+    }
+  }
+}

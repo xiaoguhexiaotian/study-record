@@ -3,16 +3,30 @@
     father:
     <button @click="fatherBtn">父组件按钮</button>
     <button @click="fatherHandleEdit">从父组件修改list</button>
-    <HelloWorld ref="HelloWorld" v-model="list" :propA="3" :propB="'hello'" :propC="true" @child-emit-one="testOne" @childEmitTwo="testTwo" />
+    <HelloWorld
+      ref="HelloWorld"
+      v-model="list"
+      :propA="3"
+      :propB="'hello'"
+      :propC="true"
+      @child-emit-one="testOne"
+      @childEmitTwo="testTwo"
+    >
+      <template #windowParam="{ windowParam }">
+        <Cascader :windowParam="null" :isSearch="true" />
+      </template>
+    </HelloWorld>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Provide, Watch, Ref } from "vue-property-decorator";
 import HelloWorld from "@/components/HelloWorld.vue";
+import Cascader from "@/components/cascader/index.vue";
 @Component({
   components: {
     HelloWorld,
+    Cascader,
   },
 })
 export default class HomeView extends Vue {
