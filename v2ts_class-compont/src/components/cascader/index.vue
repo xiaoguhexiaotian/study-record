@@ -1,20 +1,26 @@
 <template>
   <div class="window-param-select">
-    <el-cascader
-      v-model="value"
-      :options="options"
-      :props="{ multiple: true }"
-      clearable
-      :show-all-levels="false"
-      popper-class="window-param-select-popper"
-    >
-      <template slot-scope="{ node, data }">
-        <el-checkbox v-model="node.checked" v-if="node.level !== 1">
-          <span class="node-name" @click="getCurrentNode(node)">{{ data.label }}</span>
-        </el-checkbox>
-        <span v-else class="node-name" @click="getCurrentNode(node)">{{ data.label }}</span>
-      </template>
-    </el-cascader>
+    <div :class="classField">
+      <el-cascader
+        v-model="value"
+        :options="options"
+        :props="{ multiple: sceneType !== SceneType.Cell }"
+        :show-all-levels="false"
+        popper-class="window-param-select-popper"
+      >
+        <template slot-scope="{ node, data }">
+          <el-checkbox v-model="node.checked" v-if="node.level !== 1">
+            <span class="node-name" @click="getCurrentNode(node)">{{ data.label }}</span>
+          </el-checkbox>
+          <span v-else class="node-name" @click="getCurrentNode(node)">{{ data.label }}</span>
+        </template>
+      </el-cascader>
+      <CellContor
+        v-if="sceneType === SceneType.Cell"
+        :windowParam="nodeWindowParam"
+        :currenType="value[0]"
+      />
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -27,8 +33,14 @@ import {
   NaturalType,
   ReportType,
   windowsParamOptions,
+  SceneType,
+  cellWindowParamOptions,
 } from "./constant";
-@Component
+import CellContor from "./cellcontor/index.vue";
+
+@Component({
+  components: { CellContor },
+})
 export default class WindowParamSelect extends Vue {
   // style = require("./index.module.scss");
   @Prop({ default: () => false }) readonly isSearch!: boolean; // 是否搜索
@@ -36,9 +48,12 @@ export default class WindowParamSelect extends Vue {
   @Prop({ default: null }) readonly windowParam?: any; // 时间窗
   @Prop({ default: AGGTYPE.CUR }) readonly aggregateType?: string; // 聚合方式
   @Prop() readonly nodeId: any;
+  @Prop({ default: SceneType.Point }) readonly sceneType?: SceneType;
+
+  SceneType = SceneType;
 
   value: any = [];
-  options = windowsParamOptions;
+  options: any[] = [];
   nodeWindowParam: any = DEFALUT_WINDOWSPARAM[this.reportType];
   omitValues = Object.values(OmitValues);
   tumblingType = Object.values(TumblingType);
@@ -46,12 +61,19 @@ export default class WindowParamSelect extends Vue {
   selectedPeriodData: { start: string; end: string; value: string }[] = [];
   created() {
     console.log(DEFALUT_WINDOWSPARAM[this.reportType], this.nodeId);
-
     this.nodeWindowParam = DEFALUT_WINDOWSPARAM[this.reportType];
     this.handleInit();
     this.handleEmit();
   }
+  handleOptions() {
+    if (this.sceneType === SceneType.Cell) {
+      this.options = cellWindowParamOptions;
+    } else {
+      this.options = windowsParamOptions;
+    }
+  }
   handleInit() {
+    this.handleOptions();
     if (this.windowParam) {
       this.nodeWindowParam = this.windowParam;
     }
@@ -129,6 +151,7 @@ export default class WindowParamSelect extends Vue {
   }
   handleRadioData() {
     const type = this.value[0];
+
     if (this.tumblingType.includes(type)) {
       this.nodeWindowParam = {
         Tumbling: {
@@ -136,15 +159,17 @@ export default class WindowParamSelect extends Vue {
           unit: 1,
         },
       };
-    } else {
+    } else if (this.naturalType.includes(type)) {
       this.nodeWindowParam = {
         Natural: {
           dismension: type,
           unit: 1,
         },
       };
+    } else if (this.omitValues.includes(type)) {
+      console.log(type, "其他类型");
     }
-    console.log(this.value, this.selectedPeriodData, "处理单选数据");
+    console.log(this.value, this.nodeWindowParam, "处理单选数据");
   }
   handleMultipleData(multipleType: any) {
     console.log(multipleType, this.value, this.selectedPeriodData, "处理多选数据");
@@ -165,16 +190,25 @@ export default class WindowParamSelect extends Vue {
     }
     console.log("处理结果", this.nodeWindowParam);
   }
-
   handleEmit() {
-    console.log("handleEmit=======>", this.nodeId);
-
     this.$emit("change", this.nodeWindowParam, this.nodeId);
+  }
+
+  get classField() {
+    if (this.sceneType === SceneType.Cell && this.value.includes(OmitValues.Shift)) {
+      return "cell-shift";
+    }
+    if (this.sceneType === SceneType.Cell && this.value.includes(OmitValues.Custom)) {
+      return "cell-custom";
+    }
+    return "";
   }
 }
 </script>
 <style lang="scss" scoped>
 .window-param-select {
+  text-align: left;
+  width: 300px;
   // background-color: red;
   // :global {
   .el-cascader {

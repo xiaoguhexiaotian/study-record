@@ -60,8 +60,8 @@ export enum NaturalType {
 export enum OmitValues {
   Shift = 'Shift',
   Group = 'Group',
-  Period = 'Period',
-  TimeLength = 'TimeLength'
+  Period = 'Period', // 时间段
+  Custom = 'Custom'
 }
 
 export const windowsParamOptions = [
@@ -167,3 +167,48 @@ export const windowsParamOptions = [
     ]
   }
 ]
+
+export const cellWindowParamOptions = [
+  {
+    value: TumblingType.MINUTE,
+    label: '1分钟'
+  }, {
+    value: TumblingType.HOUR,
+    label: '1小时'
+  }, {
+    value: TumblingType.DAY,
+    label: '1天'
+  }, {
+    value: NaturalType.WEEK,
+    label: '1周'
+  },
+  {
+    value: NaturalType.MONTH,
+    label: '1月(自然月)'
+  }, {
+    value: NaturalType.QUARTER,
+    label: '1季度'
+  },
+  {
+    value: NaturalType.YEAR,
+    label: '1年'
+  },
+  {
+    value: 'Custom',
+    label: '自定义时长'
+  },
+  {
+    value: OmitValues.Shift,
+    label: '按班次/班组',
+  },
+  {
+    value: OmitValues.Period,
+    label: '自定义时段',
+  }
+]
+
+
+export enum SceneType {
+  Cell = 'Cell',
+  Point = 'Point'
+}

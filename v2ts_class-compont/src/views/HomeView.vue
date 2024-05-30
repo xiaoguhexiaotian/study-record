@@ -19,6 +19,7 @@
           :isSearch="true"
           @change="handleChange"
           :nodeId="nodeId"
+          :sceneType="SceneType.Cell"
         />
       </template>
     </HelloWorld>
@@ -29,6 +30,7 @@
 import { Component, Vue, Provide, Watch, Ref } from "vue-property-decorator";
 import HelloWorld from "@/components/HelloWorld.vue";
 import Cascader from "@/components/cascader/index.vue";
+import { SceneType } from "@/components/cascader/constant";
 @Component({
   components: {
     HelloWorld,
@@ -36,6 +38,7 @@ import Cascader from "@/components/cascader/index.vue";
   },
 })
 export default class HomeView extends Vue {
+  SceneType = SceneType;
   list = [{ name: "张三", id: 18 }];
   fatherValue = "父组件数据";
   provideValue = "provideValue";
@@ -65,22 +68,22 @@ export default class HomeView extends Vue {
   // @Ref区域
   @Ref("HelloWorld") son!: HelloWorld; // 传值是ref定义的值，使用的值是后面的变量son 如果不传值，默认使用son作为ref传值
   // 生命周期区域
-  beforeCreate() {
-    console.log("父beforeCreate");
-  }
-  created() {
-    console.log("父created");
-  }
-  beforeMount() {
-    console.log("父beforeMount");
-  }
-  mounted() {
-    console.log("父mounted");
-  }
+  // beforeCreate() {
+  //   console.log("父beforeCreate");
+  // }
+  // created() {
+  //   console.log("父created");
+  // }
+  // beforeMount() {
+  //   console.log("父beforeMount");
+  // }
+  // mounted() {
+  //   console.log("父mounted");
+  // }
   nodeWindowParam: any = null;
   handleChange(val: any, nodeId: string) {
     this.nodeWindowParam = { windowParam: val, nodeId };
-    console.log("handleChange======>", this.nodeWindowParam);
+    // console.log("handleChange======>", this.nodeWindowParam);
   }
 }
 </script>

@@ -5,7 +5,7 @@
     <span>Two:{{ topLevelValue }}</span>
     <span>Three:{{ test }}</span> -->
     <div v-for="(i, index) in list" :key="index">
-      <span>{{ i.windowParam }}</span>
+      <!-- <span>{{ i.windowParam }}</span> -->
       <div class="slot">
         <slot name="windowParam" :windowParam="i.windowParam" :nodeId="i.id"></slot>
       </div>
@@ -31,7 +31,7 @@ export default class Grandson extends Vue {
       }
       return i;
     });
-    console.log("listChange=====>", this.list);
+    // console.log("listChange=====>", this.list);
   }
   list: any = [
     {
