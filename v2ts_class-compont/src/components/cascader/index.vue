@@ -7,7 +7,6 @@
       clearable
       :show-all-levels="false"
       popper-class="window-param-select-popper"
-      @change="handleChange"
     >
       <template slot-scope="{ node, data }">
         <el-checkbox v-model="node.checked" v-if="node.level !== 1">
@@ -31,45 +30,40 @@ import {
 } from "./constant";
 @Component
 export default class WindowParamSelect extends Vue {
-  style = require("./index.module.scss");
+  // style = require("./index.module.scss");
   @Prop({ default: () => false }) readonly isSearch!: boolean; // 是否搜索
   @Prop({ default: ReportType.Daily }) readonly reportType!: ReportType; //报表类型
   @Prop({ default: null }) readonly windowParam?: any; // 时间窗
   @Prop({ default: AGGTYPE.CUR }) readonly aggregateType?: string; // 聚合方式
+  @Prop() readonly nodeId: any;
 
   value: any = [];
   options = windowsParamOptions;
-  nodeWindowParam: any = "";
+  nodeWindowParam: any = DEFALUT_WINDOWSPARAM[this.reportType];
   omitValues = Object.values(OmitValues);
   tumblingType = Object.values(TumblingType);
   naturalType = Object.values(NaturalType);
   selectedPeriodData: { start: string; end: string; value: string }[] = [];
   created() {
+    console.log(DEFALUT_WINDOWSPARAM[this.reportType], this.nodeId);
+
+    this.nodeWindowParam = DEFALUT_WINDOWSPARAM[this.reportType];
     this.handleInit();
+    this.handleEmit();
   }
   handleInit() {
-    if (!this.isSearch) {
-      this.nodeWindowParam = DEFALUT_WINDOWSPARAM[this.reportType];
-    } else {
+    if (this.windowParam) {
       this.nodeWindowParam = this.windowParam;
-      if (!this.windowParam) {
-        this.nodeWindowParam = DEFALUT_WINDOWSPARAM[this.reportType];
-      }
     }
     for (const key in this.nodeWindowParam) {
       const obj = this.nodeWindowParam[key];
-      console.log(obj);
-
       if (["Tumbling", "Natural"].includes(key)) {
         this.value = [obj.dimentsion];
       } else if (["Shift"].includes(key)) {
         this.value = ["Shift", obj.Shift];
       }
     }
-    console.log(this.nodeWindowParam, this.value);
-  }
-  handleChange(valueList: any) {
-    console.log(valueList);
+    console.log(this.nodeWindowParam, this.value, "init");
   }
   getCurrentNode(node: any) {
     console.log(node, node.parent);
@@ -131,6 +125,7 @@ export default class WindowParamSelect extends Vue {
       this.value = tempData;
       this.handleMultipleData(node.parent.value);
     }
+    this.handleEmit();
   }
   handleRadioData() {
     const type = this.value[0];
@@ -156,7 +151,9 @@ export default class WindowParamSelect extends Vue {
     switch (multipleType) {
       case OmitValues.Shift:
       case OmitValues.Group:
-        this.nodeWindowParam = this.value.map((arr: string[]) => ({ [multipleType]: arr[1] }));
+        this.nodeWindowParam = this.value.map((arr: string[]) => ({
+          [multipleType]: arr[1],
+        }));
         break;
       case OmitValues.Period:
         this.nodeWindowParam = this.selectedPeriodData.map(item => {
@@ -167,6 +164,12 @@ export default class WindowParamSelect extends Vue {
         break;
     }
     console.log("处理结果", this.nodeWindowParam);
+  }
+
+  handleEmit() {
+    console.log("handleEmit=======>", this.nodeId);
+
+    this.$emit("change", this.nodeWindowParam, this.nodeId);
   }
 }
 </script>

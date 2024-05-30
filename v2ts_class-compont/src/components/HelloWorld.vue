@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    son:
+    <!-- son:
     <input v-model="name" />
     {{ list }}
     <span>{{ count }}</span>
@@ -8,10 +8,10 @@
     <button @click="minus">--</button>
     <button @click="handleEdit">子组件修改list</button>
     <button @click="childEmitOne">子组件触发emit</button>
-    <button @click="childClick">子组件触发emit</button>
-    <Grandson>
-      <template #windowParam="{ windowParam }">
-        <slot name="windowParam" :windowParam="windowParam"></slot>
+    <button @click="childClick">子组件触发emit</button> -->
+    <Grandson :nodeWindowParam="nodeWindowParam">
+      <template #windowParam="{ windowParam, nodeId }">
+        <slot name="windowParam" :windowParam="windowParam" :nodeId="nodeId"></slot>
       </template>
     </Grandson>
   </div>
@@ -31,6 +31,7 @@ export default class HelloWorld extends Vue {
   @Prop(Number) readonly propA: number | undefined;
   @Prop({ default: "default value" }) readonly propB!: string;
   @Prop([String, Boolean]) readonly propC: string | boolean | undefined;
+  @Prop() readonly nodeWindowParam: any;
 
   @Model("change", { type: Array, default: [] }) list!: IList[] | [];
 

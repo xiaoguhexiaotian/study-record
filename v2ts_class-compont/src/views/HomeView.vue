@@ -1,19 +1,25 @@
 <template>
   <div class="home">
-    father:
+    <!-- father:
     <button @click="fatherBtn">父组件按钮</button>
-    <button @click="fatherHandleEdit">从父组件修改list</button>
+    <button @click="fatherHandleEdit">从父组件修改list</button> -->
     <HelloWorld
       ref="HelloWorld"
       v-model="list"
       :propA="3"
       :propB="'hello'"
       :propC="true"
+      :nodeWindowParam="nodeWindowParam"
       @child-emit-one="testOne"
       @childEmitTwo="testTwo"
     >
-      <template #windowParam="{ windowParam }">
-        <Cascader :windowParam="null" :isSearch="true" />
+      <template #windowParam="{ windowParam, nodeId }">
+        <Cascader
+          :windowParam="windowParam"
+          :isSearch="true"
+          @change="handleChange"
+          :nodeId="nodeId"
+        />
       </template>
     </HelloWorld>
   </div>
@@ -70,6 +76,11 @@ export default class HomeView extends Vue {
   }
   mounted() {
     console.log("父mounted");
+  }
+  nodeWindowParam: any = null;
+  handleChange(val: any, nodeId: string) {
+    this.nodeWindowParam = { windowParam: val, nodeId };
+    console.log("handleChange======>", this.nodeWindowParam);
   }
 }
 </script>
