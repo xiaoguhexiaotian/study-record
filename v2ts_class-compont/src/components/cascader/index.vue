@@ -2,6 +2,7 @@
   <div class="window-param-select">
     <div :class="classField">
       <el-cascader
+        ref="cascader"
         v-model="value"
         :options="options"
         :props="{ multiple: sceneType !== SceneType.Cell }"
@@ -50,6 +51,8 @@ export default class WindowParamSelect extends Vue {
   @Prop() readonly nodeId: any;
   @Prop({ default: SceneType.Point }) readonly sceneType?: SceneType;
 
+  @Ref("cascader") cascader: any;
+
   SceneType = SceneType;
 
   value: any = [];
@@ -88,12 +91,13 @@ export default class WindowParamSelect extends Vue {
     console.log(this.nodeWindowParam, this.value, "init");
   }
   getCurrentNode(node: any) {
-    console.log(node, node.parent);
+    console.log(node, node.parent, this.$refs.cascader);
     let tempData: any[] = [];
     // 非多选
     if (!node.parent && !this.omitValues.includes(node.value)) {
       tempData = [node.value];
       this.value = tempData;
+      (this.$refs as any).cascader.dropDownVisible = false;
       this.handleRadioData();
     }
     // 多选

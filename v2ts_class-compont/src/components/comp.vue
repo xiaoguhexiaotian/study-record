@@ -40,16 +40,16 @@ export default class Grandson extends Vue {
       },
       id: 1,
     },
-    {
-      windowParam: {
-        Tumbling: { unit: 1, dimentsion: "DAY", offset: "00:00:00" },
-      },
-      id: 2,
-    },
-    {
-      windowParam: null,
-      id: 3,
-    },
+    // {
+    //   windowParam: {
+    //     Tumbling: { unit: 1, dimentsion: "DAY", offset: "00:00:00" },
+    //   },
+    //   id: 2,
+    // },
+    // {
+    //   windowParam: null,
+    //   id: 3,
+    // },
   ];
 }
 </script>

@@ -33,7 +33,7 @@
       </el-select>
     </div>
     <div v-else-if="currenType === OmitValues.Custom" class="custom">
-      <el-input v-model="model.customNum" controls-position="right">
+      <el-input v-model="model.customNum" controls-position="right" @input="inputChange">
         <el-select v-model="model.customType" slot="append" placeholder="请选择">
           <el-option
             v-for="item in CustomOption"
@@ -43,6 +43,16 @@
           ></el-option>
         </el-select>
       </el-input>
+      <el-time-picker
+        is-range
+        :value="['01:01:01', '02:02:02']"
+        value-format="HH:mm:ss"
+        format="HH:mm:ss"
+        range-separator="至"
+        start-placeholder="开始时间"
+        end-placeholder="结束时间"
+        placeholder="选择时间范围"
+      ></el-time-picker>
     </div>
   </div>
 </template>
@@ -110,12 +120,31 @@ export default class CellContor extends Vue {
     }
     console.log(this.currenType, this.newWindowParam, newVal);
   }
+  inputChange(value: any) {
+    const rule = /[^0-9/]/g;
+    this.model.customNum = value.replace(rule, "");
+    if (this.model.customNum > 10000000) {
+      this.model.customNum = 10000000;
+    }
+  }
 }
 </script>
 <style lang="scss" scoped>
-.custom {
-  .el-select .el-input {
-    width: 75px;
+.cell-contor {
+  position: relative;
+  .custom {
+    .el-select {
+      width: 75px;
+    }
+    > .el-input {
+      position: absolute;
+      bottom: 40px;
+      right: 0;
+      width: 180px;
+    }
+    .el-date-editor--timerange {
+      width: 300px;
+    }
   }
 }
 </style>
