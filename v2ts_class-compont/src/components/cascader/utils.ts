@@ -1,159 +1,63 @@
-// export const handlePointWindowParam = function (pointWindowParam: any) {
-//   const tempData: any = pointWindowParam.map((item: any) => {
-//     const { windowParam = null } = item
-//     if (windowParam) {
-//       for (const key in windowParam) {
-//         if (key === 'Tumbling') {
-//           const { dimension, unit, offset } = windowParam[key]
+import { AGGTYPE, defalutTimeWindowMap, dimensionConfig, NaturalType, TumblingType } from "./constant"
 
-import { AGGTYPE, type TumblingType } from "./constant"
-
-//           if (dimension === 'SECOND' && unit != '10') {
-//             return {
-//               ...item,
-//               label: `${unit}秒`,
-//               value: `${unit}_SECOND`
-//             }
-//           }
-
-//           if (dimension === 'MINUTE' && unit != '1') {
-//             return {
-//               ...item,
-//               label: `${unit}分`,
-//               value: `${unit}_MINUTE`
-//             }
-//           }
-
-//           if (dimension === 'HOUR' && (unit != '1' || offset != '00:00:00')) {
-//             return {
-//               ...item,
-//               label: `${unit}小时`,
-//               value: `${unit}_HOUR`
-//             }
-//           }
-
-//           if (dimension === 'DAY' && (unit != '1' || offset != '00:00:00')) {
-//             return {
-//               ...item,
-//               label: `${unit}天`,
-//               value: `${unit}_DAY`
-//             }
-//           }
-//         }
-//         if (key === 'Natural') {
-//           const { dimension, offset } = windowParam[key]
-
-//           if (dimension === 'WEEK' && (offset.offset !== '1' || offset.hms !== '00:00:00')) {
-//             return {
-//               ...item,
-//               label: `周${offset.offset}-${offset.hms}`,
-//               value: `${offset.offset}_${offset.hms}_WEEK`
-//             }
-//           }
-
-//           if (dimension === 'MONTH' && (offset.offset !== '1' || offset.hms !== '00:00:00')) {
-//             return {
-//               ...item,
-//               label: `${offset.offset}号-${offset.hms}`,
-//               value: `${offset.offset}_${offset.hms}_MONTH`
-//             }
-//           }
-//         }
-//         if (key === 'Period') {
-//           const { start, end } = windowParam[key]
-//           return {
-//             ...item,
-//             label: `${start}-${end}`,
-//             value: `${start}-${end}`
-//           }
-//         }
-//       }
-//     }
-//   })
-// }
 
 export const handlePointWindowParam = function (pointWindowParam: any) {
   const tempData: any = pointWindowParam.map((item: any) => {
     const { windowParam = null } = item
     if (windowParam) {
-      for (const key in windowParam) {
-        if (key === 'Tumbling') {
-          const { dimension, unit, offset } = windowParam[key]
-          return handleTumbling(dimension, unit, offset, item)
-        }
-        if (key === 'Natural') {
-          const { dimension, offset } = windowParam[key]
-          return handleNatural(dimension, offset, item)
-        }
-        if (key === 'Period') {
-          const { start, end } = windowParam[key]
-          return handlePeriod(start, end, item)
-        }
-      }
+      return { ...item, ...timeWindowOptionHandle(windowParam) }
     }
   })
-  console.log(tempData, 1111)
-
+  return tempData
 }
 
-const handleTumbling = (dimension: string, unit: string, offset: string, item: any) => {
-  if (dimension === 'SECOND' && unit != '10') {
+// 处理 时间窗数据 以供 选择器使用
+const timeWindowOptionHandle = (windowParam: any) => {
+  const key = Object.keys(windowParam)[0]
+  const { dimension, unit, offset, start, end } = windowParam[key]
+  const { label } = dimensionConfig[dimension] || {}
+  if (key === 'Tumbling') {
     return {
-      ...item,
-      label: `${unit}秒`,
-      value: `${unit}_SECOND`
+      label: !offset ? `${unit}${label}` : `${unit}${label}-${offset}`,
+      value: `${dimension}_${unit}_${offset}`
     }
   }
-
-  if (dimension === 'MINUTE' && unit != '1') {
+  if (key === 'Natural') {
+    if ([NaturalType.WEEK, NaturalType.MONTH].includes(dimension)) {
+      return {
+        label: `${label}${offset?.offset ? offset?.offset : 1}`,
+        value: `${dimension}_${unit}_${offset?.offset}_${offset?.hms}`
+      }
+    }
     return {
-      ...item,
-      label: `${unit}分`,
-      value: `${unit}_MINUTE`
+      label: `${unit}${label}`,
+      value: `${dimension}_${unit}`
     }
   }
-
-  if (dimension === 'HOUR' && (unit != '1' || offset != '00:00:00')) {
+  if (key === 'Period') {
     return {
-      ...item,
-      label: `${unit}小时`,
-      value: `${unit}_HOUR`
-    }
-  }
-
-  if (dimension === 'DAY' && (unit != '1' || offset != '00:00:00')) {
-    return {
-      ...item,
-      label: `${unit}天`,
-      value: `${unit}_DAY`
+      label: `${start}_${end}`,
+      value: `${start}_${end}`
     }
   }
 }
 
-const handleNatural = (dimension: string, offset: { hms: string, offset: string }, item: any) => {
-  if (dimension === 'WEEK' && (offset.offset !== '1' || offset.hms !== '00:00:00')) {
-    return {
-      ...item,
-      label: `周${offset.offset}-${offset.hms}`,
-      value: `${offset.offset}_${offset.hms}_WEEK`
-    }
+export function getKeyByWindowParam(item: any) {
+  if (item instanceof Array) {
+    const res = item.map((el) => el.Shift).sort((a, b) => a - b)
+    return res.join('_')
   }
-
-  if (dimension === 'MONTH' && (offset.offset !== '1' || offset.hms !== '00:00:00')) {
-    return {
-      ...item,
-      label: `${offset.offset}号-${offset.hms}`,
-      value: `${offset.offset}_${offset.hms}_MONTH`
-    }
+  const obj = item.Tumbling || item.Natural || item.Period || item.Shift
+  if ('Tumbling' in item) {
+    return `${obj.dimension}_${obj.unit}_${obj.offset}`
   }
-}
-
-const handlePeriod = (start: string, end: string, item: any) => {
-  return {
-    ...item,
-    label: `${start}-${end}`,
-    value: `${start}-${end}`
+  if ('Natural' in item) {
+    return `${obj.dimension}_${obj.unit}_${obj.offset?.offset}_${obj.offset?.hms}`
   }
+  if ('Period' in item) {
+    return `${item.start}_${item.end}`
+  }
+  return `Shift_${item.Shift}`
 }
 
 export const isDefaultWindowParam = function (windowParam: any) {
@@ -193,6 +97,18 @@ export const getPointWindowParamList = (id: string) => {
     result.push(obj)
   }
   return new Promise((resolve) => {
+    result.push({
+      pointId: id,
+      aggregateAttrId: id,
+      timeWindowParam: {
+        Tumbling: {
+          dimension: TumblingType.MINUTE,
+          unit: 1
+        }
+      },
+      timeWindow: TumblingType.SECOND,
+      aggregateTypeList: AGGTYPEList
+    })
     return resolve(result)
   })
 }
@@ -213,7 +129,6 @@ const handleNaturalWindow = (dimension: string) => {
       dimension
     }
   }
-
   if (['WEEK', 'MONTH'].includes(dimension)) {
     obj.Natural.offset = {
       hms: '00:00:00', offset: 1

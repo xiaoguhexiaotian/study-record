@@ -281,6 +281,71 @@ export const PointWindowParam = [
     }
   },
 ]
+// 时间窗默认数据
+export const defalutTimeWindowMap: any = {
+  [TumblingType.SECOND]: {
+    Tumbling: {
+      dimension: TumblingType.SECOND,
+      unit: 10
+    }
+  },
+  [TumblingType.MINUTE]: {
+    Tumbling: {
+      dimension: TumblingType.MINUTE,
+      unit: 1
+    }
+  },
+  [TumblingType.HOUR]: {
+    Tumbling: {
+      dimension: TumblingType.HOUR,
+      unit: 1
+    }
+  },
+  [TumblingType.DAY]: {
+    Tumbling: {
+      dimension: TumblingType.DAY,
+      unit: 1
+    }
+  },
+  [NaturalType.WEEK]: {
+    Natural: {
+      dimension: NaturalType.WEEK,
+      offset: { hms: '00:00:00', offset: 1 },
+      unit: 1
+    }
+  },
+  [NaturalType.MONTH]: {
+    Natural: {
+      dimension: NaturalType.MONTH,
+      offset: { hms: '00:00:00', offset: 1 },
+      unit: 1
+    }
+  },
+  [NaturalType.QUARTER]: {
+    Natural: {
+      dimension: NaturalType.QUARTER,
+      unit: 1
+    }
+  },
+  [NaturalType.YEAR]: {
+    Natural: {
+      dimension: NaturalType.YEAR,
+      unit: 1
+    }
+  },
+}
+
+// 定义每个维度对应的单位和默认值
+export const dimensionConfig: any = {
+  [TumblingType.SECOND]: { label: '秒', defaultUnit: 10, defaultValue: TumblingType.SECOND },
+  [TumblingType.MINUTE]: { label: '分钟', defaultUnit: 1, defaultValue: TumblingType.MINUTE },
+  [TumblingType.HOUR]: { label: '小时', defaultUnit: 1, defaultValue: TumblingType.HOUR },
+  [TumblingType.DAY]: { label: '天', defaultUnit: 1, defaultValue: TumblingType.DAY },
+  [NaturalType.WEEK]: { label: '周', defaultUnit: 1, defaultValue: NaturalType.WEEK },
+  [NaturalType.MONTH]: { label: '月', defaultUnit: 1, defaultValue: NaturalType.MONTH },
+  [NaturalType.QUARTER]: { label: '季度', defaultUnit: 1, defaultValue: NaturalType.QUARTER },
+  [NaturalType.YEAR]: { label: '年', defaultUnit: 1, defaultValue: NaturalType.YEAR },
+}
 
 export const testArray = [
   {
