@@ -182,12 +182,12 @@ const timeWindowList = ['MINUTE', 'HOUR', 'DAY', 'WEEK', 'MONTH', 'QUARTER', 'YE
 export const getPointWindowParamList = (id: string) => {
   const result: any = []
   const AGGTYPEList = Object.values(AGGTYPE)
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 5; i++) {
     const obj = {
       pointId: id,
       aggregateAttrId: id,
+      timeWindowParam: i <= 2 ? handleThumblingWindow(timeWindowList[i]) : handleThumblingWindow(timeWindowList[i]),
       timeWindow: timeWindowList[i],
-      timeWindowParam: handleThumblingWindow(timeWindowList[i]),
       aggregateTypeList: AGGTYPEList.slice(0, i + 1)
     }
     result.push(obj)
@@ -204,4 +204,20 @@ const handleThumblingWindow = (dimension: string) => {
       dimension
     }
   }
+}
+
+const handleNaturalWindow = (dimension: string) => {
+  const obj: any = {
+    Natural: {
+      unit: 1,
+      dimension
+    }
+  }
+
+  if (['WEEK', 'MONTH'].includes(dimension)) {
+    obj.Natural.offset = {
+      hms: '00:00:00', offset: 1
+    }
+  }
+  return obj
 }
