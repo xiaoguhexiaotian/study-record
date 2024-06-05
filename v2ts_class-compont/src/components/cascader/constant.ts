@@ -212,3 +212,72 @@ export enum SceneType {
   Cell = 'Cell',
   Point = 'Point'
 }
+
+export const PointWindowParam = [
+  {
+    windowParam: {
+      Tumbling: {
+        dimension: 'SECOND',
+        offset: null,
+        unit: 60 // 自定义秒
+      }
+    }
+  },
+  {
+    windowParam: {
+      Tumbling: {
+        dimension: 'MINUTE',
+        offset: null,
+        unit: 60  // 自定义分
+      }
+    }
+  },
+  {
+    windowParam: {
+      Tumbling: {
+        dimension: 'HOUR',
+        offset: '02:02:02',
+        unit: 24  // 自定义小时
+      }
+    }
+  },
+  {
+    windowParam: {
+      Tumbling: {
+        dimension: 'DAY',
+        offset: '01:01:01',
+        unit: 24  // 自定义天
+      }
+    }
+  },
+  {
+    windowParam: {
+      Natural: {
+        dimension: 'WEEK',
+        offset: {
+          hms: '01:01:01',// 偏移量
+          offset: 5 // 周五
+        }
+      }
+    }
+  },
+  {
+    windowParam: {
+      Natural: {
+        dimension: 'MONTH',
+        offset: {
+          hms: '01:01:01',// 偏移量
+          offset: 5 // 5号
+        }
+      }
+    }
+  },
+  {
+    windowParam: {
+      Period: {
+        end: '12:00:00',
+        start: '08:30:00'
+      }
+    }
+  },
+]

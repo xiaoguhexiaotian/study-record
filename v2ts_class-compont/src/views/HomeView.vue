@@ -3,7 +3,7 @@
     <!-- father:
     <button @click="fatherBtn">父组件按钮</button>
     <button @click="fatherHandleEdit">从父组件修改list</button> -->
-    <HelloWorld
+    <!-- <HelloWorld
       ref="HelloWorld"
       v-model="list"
       :propA="3"
@@ -22,7 +22,7 @@
           :sceneType="SceneType.Cell"
         />
       </template>
-    </HelloWorld>
+    </HelloWorld> -->
   </div>
 </template>
 
@@ -31,6 +31,8 @@ import { Component, Vue, Provide, Watch, Ref } from "vue-property-decorator";
 import HelloWorld from "@/components/HelloWorld.vue";
 import Cascader from "@/components/cascader/index.vue";
 import { SceneType } from "@/components/cascader/constant";
+import { PointWindowParam } from "@/components/cascader/constant";
+import { handlePointWindowParam } from "@/components/cascader/utils";
 @Component({
   components: {
     HelloWorld,
@@ -71,9 +73,9 @@ export default class HomeView extends Vue {
   // beforeCreate() {
   //   console.log("父beforeCreate");
   // }
-  // created() {
-  //   console.log("父created");
-  // }
+  created() {
+    this.InitPointWindowParam();
+  }
   // beforeMount() {
   //   console.log("父beforeMount");
   // }
@@ -84,6 +86,9 @@ export default class HomeView extends Vue {
   handleChange(val: any, nodeId: string) {
     this.nodeWindowParam = { windowParam: val, nodeId };
     // console.log("handleChange======>", this.nodeWindowParam);
+  }
+  InitPointWindowParam() {
+    handlePointWindowParam(PointWindowParam);
   }
 }
 </script>
