@@ -6,6 +6,8 @@
 //         if (key === 'Tumbling') {
 //           const { dimension, unit, offset } = windowParam[key]
 
+import { AGGTYPE, type TumblingType } from "./constant"
+
 //           if (dimension === 'SECOND' && unit != '10') {
 //             return {
 //               ...item,
@@ -174,4 +176,32 @@ export const isDefaultWindowParam = function (windowParam: any) {
     }
   }
   return true
+}
+
+const timeWindowList = ['MINUTE', 'HOUR', 'DAY', 'WEEK', 'MONTH', 'QUARTER', 'YEAR', 'CustomDur', 'Shift', 'CustomPeriod']
+export const getPointWindowParamList = (id: string) => {
+  const result: any = []
+  const AGGTYPEList = Object.values(AGGTYPE)
+  for (let i = 0; i < 10; i++) {
+    const obj = {
+      pointId: id,
+      aggregateAttrId: id,
+      timeWindow: timeWindowList[i],
+      timeWindowParam: handleThumblingWindow(timeWindowList[i]),
+      aggregateTypeList: AGGTYPEList.slice(0, i + 1)
+    }
+    result.push(obj)
+  }
+  return new Promise((resolve) => {
+    return resolve(result)
+  })
+}
+
+const handleThumblingWindow = (dimension: string) => {
+  return {
+    Tumbling: {
+      unit: 10,
+      dimension
+    }
+  }
 }

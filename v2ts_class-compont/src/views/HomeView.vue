@@ -30,9 +30,9 @@
 import { Component, Vue, Provide, Watch, Ref } from "vue-property-decorator";
 import HelloWorld from "@/components/HelloWorld.vue";
 import Cascader from "@/components/cascader/index.vue";
-import { SceneType } from "@/components/cascader/constant";
+import { SceneType, testArray } from "@/components/cascader/constant";
 import { PointWindowParam } from "@/components/cascader/constant";
-import { handlePointWindowParam } from "@/components/cascader/utils";
+import { getPointWindowParamList, handlePointWindowParam } from "@/components/cascader/utils";
 @Component({
   components: {
     HelloWorld,
@@ -87,8 +87,31 @@ export default class HomeView extends Vue {
     this.nodeWindowParam = { windowParam: val, nodeId };
     // console.log("handleChange======>", this.nodeWindowParam);
   }
-  InitPointWindowParam() {
-    handlePointWindowParam(PointWindowParam);
+  async InitPointWindowParam() {
+    // handlePointWindowParam(PointWindowParam);
+    const res = await getPointWindowParamList("20017");
+
+    // const temp = testArray.map((item:any))
+    const uniqueData = testArray.filter((item, index, self) => {
+      return (
+        index ===
+        self.findIndex(
+          otherItem => JSON.stringify(otherItem.windowParam) === JSON.stringify(item.windowParam)
+        )
+      );
+    });
+
+    // const uniqueData = testArray.map(item => {
+    //   // debugger;
+    //   const isDuplicate = testArray.some(
+    //     otherItem => JSON.stringify(otherItem.windowParam) === JSON.stringify(item.windowParam)
+    //   );
+    //   if (isDuplicate) {
+    //     return { ...item, disabled: false };
+    //   }
+    //   return item;
+    // });
+    console.log(res, testArray, uniqueData);
   }
 }
 </script>

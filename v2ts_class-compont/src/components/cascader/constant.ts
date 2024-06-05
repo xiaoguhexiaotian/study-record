@@ -281,3 +281,95 @@ export const PointWindowParam = [
     }
   },
 ]
+
+export const testArray = [
+  {
+    value: TumblingType.SECOND,
+    label: '10秒',
+    disabled: true,
+    windowParam: {
+      Tumbling: {
+        dimension: TumblingType.SECOND,
+        unit: 10
+      }
+    }
+  },
+  {
+    value: TumblingType.MINUTE,
+    label: '1分钟',
+    disabled: true,
+    windowParam: {
+      Tumbling: {
+        dimension: TumblingType.MINUTE,
+        unit: 1
+      }
+    }
+  },
+  {
+    value: TumblingType.HOUR,
+    label: '1小时',
+    disabled: true,
+    windowParam: {
+      Tumbling: {
+        dimension: TumblingType.HOUR,
+        unit: 1
+      }
+    }
+  },
+  {
+    value: TumblingType.DAY,
+    label: '1天',
+    disabled: true,
+    windowParam: {
+      Tumbling: {
+        dimension: TumblingType.DAY,
+        unit: 1
+      }
+    }
+  },
+  {
+    value: NaturalType.WEEK,
+    label: '1周',
+    disabled: true,
+    windowParam: {
+      Natural: {
+        dimension: NaturalType.WEEK,
+        offset: { hms: '00:00:00', offset: 1 },
+        unit: 1
+      }
+    }
+  },
+  {
+    value: NaturalType.MONTH,
+    label: '1月',
+    disabled: true,
+    windowParam: {
+      Natural: {
+        dimension: NaturalType.MONTH,
+        offset: { hms: '00:00:00', offset: 1 },
+        unit: 1
+      }
+    }
+  }, {
+    value: NaturalType.QUARTER,
+    label: '1季度',
+    disabled: true,
+    windowParam: {
+      Natural: {
+        dimension: NaturalType.QUARTER,
+        unit: 1
+      }
+    }
+  },
+  {
+    value: NaturalType.YEAR,
+    label: '1年',
+    disabled: true,
+    windowParam: {
+      Natural: {
+        dimension: NaturalType.YEAR,
+        unit: 1
+      }
+    }
+  },
+]
