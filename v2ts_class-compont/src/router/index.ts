@@ -22,6 +22,11 @@ const routes: Array<RouteConfig> = [
     path: '/divInput',
     name: 'divInput',
     component: () => import(/* webpackChunkName: "about" */ '../views/divInput.vue')
+  },
+  {
+    path: '/handleData',
+    name: 'handleData',
+    component: () => import(/* webpackChunkName: "about" */ '../views/handleData.vue')
   }
 ]
 
