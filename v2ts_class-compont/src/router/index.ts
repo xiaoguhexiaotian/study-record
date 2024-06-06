@@ -27,6 +27,11 @@ const routes: Array<RouteConfig> = [
     path: '/handleData',
     name: 'handleData',
     component: () => import(/* webpackChunkName: "about" */ '../views/handleData.vue')
+  },
+  {
+    path: '/cacheFetch',
+    name: 'cacheFetch',
+    component: () => import(/* webpackChunkName: "about" */ '../views/cacheFetch.vue')
   }
 ]
 

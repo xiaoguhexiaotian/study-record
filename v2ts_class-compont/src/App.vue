@@ -9,6 +9,7 @@
       |
       <router-link to="/handleData">data</router-link>
       |
+      <router-link to="/cacheFetch">cacheFetch</router-link>
     </nav>
     <router-view />
   </div>

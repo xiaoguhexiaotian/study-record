@@ -1,8 +1,36 @@
 <template>
   <div class="data">
-    <!-- <el-cascader :options="options">
-      <template slot-scope="{ node, data }"></template>
-    </el-cascader> -->
+    级联：
+    <el-cascader
+      :options="options"
+      :props="{
+        multiple: true,
+        checkStrictly: true,
+      }"
+      :clearable="false"
+      :show-all-levels="false"
+    >
+      <template slot-scope="{ node, data }">
+        <el-tooltip class="item" effect="dark" content="Top Center 提示文字" placement="top">
+          <span>{{ data.label }}</span>
+          <span v-if="!node.isLeaf">({{ data.children.length }})</span>
+        </el-tooltip>
+      </template>
+    </el-cascader>
+    下拉：
+    <el-select v-model="value" placeholder="请选择">
+      <el-option
+        v-for="item in cities"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value"
+        :disabled="item.disabled"
+      >
+        <el-tooltip class="item" effect="dark" content="Top Center 提示文字" placement="top">
+          <div>{{ item.label }}</div>
+        </el-tooltip>
+      </el-option>
+    </el-select>
   </div>
 </template>
 
@@ -17,6 +45,37 @@ import { Component, Vue } from "vue-property-decorator";
 @Component
 export default class HomeView extends Vue {
   options: any = [];
+
+  cities = [
+    {
+      value: "Beijing",
+      label: "北京",
+    },
+    {
+      value: "Shanghai",
+      label: "上海",
+    },
+    {
+      value: "Nanjing",
+      label: "南京",
+    },
+    {
+      value: "Chengdu",
+      label: "成都",
+      disabled: true,
+    },
+    {
+      value: "Shenzhen",
+      label: "深圳",
+      disabled: true,
+    },
+    {
+      value: "Guangzhou",
+      label: "广州",
+      disabled: true,
+    },
+  ];
+  value = "";
 
   created() {
     this.handleInit();
