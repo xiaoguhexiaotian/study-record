@@ -26,16 +26,16 @@
         :value="item.value"
         :disabled="item.disabled"
       >
-        <el-tooltip class="item" effect="dark" content="Top Center 提示文字" placement="top">
-          <div>{{ item.label }}</div>
-        </el-tooltip>
+        <!-- <el-tooltip class="item" effect="dark" content="Top Center 提示文字" placement="top"> -->
+        <div>{{ item.label }}</div>
+        <!-- </el-tooltip> -->
       </el-option>
     </el-select>
   </div>
 </template>
 
 <script lang="ts">
-import { testArray } from "@/components/cascader/constant";
+import { AGGTYPE, testArray, AggOptions } from "@/components/cascader/constant";
 import {
   getKeyByWindowParam,
   getPointWindowParamList,
@@ -46,39 +46,13 @@ import { Component, Vue } from "vue-property-decorator";
 export default class HomeView extends Vue {
   options: any = [];
 
-  cities = [
-    {
-      value: "Beijing",
-      label: "北京",
-    },
-    {
-      value: "Shanghai",
-      label: "上海",
-    },
-    {
-      value: "Nanjing",
-      label: "南京",
-    },
-    {
-      value: "Chengdu",
-      label: "成都",
-      disabled: true,
-    },
-    {
-      value: "Shenzhen",
-      label: "深圳",
-      disabled: true,
-    },
-    {
-      value: "Guangzhou",
-      label: "广州",
-      disabled: true,
-    },
-  ];
+  cities: { label: string; value: AGGTYPE; disabled: boolean }[] = [];
+  aggTypeList = Object.values(AGGTYPE).slice(11, 13);
   value = "";
 
   created() {
-    this.handleInit();
+    // this.handleInit();
+    this.handleAggOptions();
   }
   handleInit() {
     this.handleOptions();
@@ -135,6 +109,30 @@ export default class HomeView extends Vue {
     // });
 
     console.log(res, temp, temp2, this.options, uniqueItems);
+  }
+
+  handleAggOptions() {
+    this.cities = AggOptions.map(i => {
+      const current = this.aggTypeList.find(aggType => aggType == i.value) as any;
+      if ([AGGTYPE.DSUM, AGGTYPE.ACC, AGGTYPE.DIF].includes(current)) {
+        return { ...i, disabled: false, isExtra: false };
+      }
+      if (current) {
+        return { ...i, disabled: false };
+      }
+      return i;
+    })
+      .sort((a, b) => {
+        if (a.disabled && !b.disabled) {
+          return 1;
+        } else if (!a.disabled && b.disabled) {
+          return -1;
+        } else {
+          return 0;
+        }
+      })
+      .filter(i => !i.isExtra);
+    console.log(this.aggTypeList, this.cities);
   }
 }
 </script>

@@ -1,4 +1,4 @@
-import { AGGTYPE, defalutTimeWindowMap, dimensionConfig, NaturalType, TumblingType } from "./constant"
+import { AGGTYPE, defalutTimeWindowMap, dimensionConfig, NaturalType, testArray, TumblingType } from "./constant"
 
 
 export const handlePointWindowParam = function (pointWindowParam: any) {
@@ -135,4 +135,14 @@ const handleNaturalWindow = (dimension: string) => {
     }
   }
   return obj
+}
+
+// 返回的数据是默认时间窗 相当于 默认时间窗已有
+export const getDefaultWindowParam = () => {
+  const result: any = testArray.slice(3, 7)
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(result)
+    }, 1500)
+  })
 }

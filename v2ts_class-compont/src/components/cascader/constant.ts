@@ -1,18 +1,90 @@
 export enum AGGTYPE {
-  AVG = 'Avg',
   CUR = 'Cur',
+  AVG = 'Avg',
   MAX = 'Max',
-  MIN = 'Min',
-  RNG = 'Rng',
   STD = 'Std',
   SUM = 'Sum',
+  MIN = 'Min',
+  RNG = 'Rng',
   DVE = 'Dve',
+  RDVE = 'Rdve',
   FSM = 'Fsm',
   DSUM = 'Dsum',
-  ACC = 'AcC',
-  RDVE = 'Rdve',
+  ACC = 'Acc',
   DIF = 'Dif'
 }
+
+export const AggOptions = [
+  {
+    label: '瞬时值',
+    value: AGGTYPE.CUR,
+    disabled: true
+  },
+  {
+    label: '平均值',
+    value: AGGTYPE.AVG,
+    disabled: true
+  },
+  {
+    label: '最大值',
+    value: AGGTYPE.MAX,
+    disabled: true
+  },
+  {
+    label: '标准差',
+    value: AGGTYPE.STD,
+    disabled: true
+  },
+  {
+    label: '求和',
+    value: AGGTYPE.SUM,
+    disabled: true
+  },
+  {
+    label: '最小值',
+    value: AGGTYPE.MIN,
+    disabled: true
+  },
+  {
+    label: '最大值-最小值',
+    value: AGGTYPE.RNG,
+    disabled: true
+  },
+  {
+    label: '终值-起始值',
+    value: AGGTYPE.DVE,
+    disabled: true
+  },
+  {
+    label: '起始值-终值',
+    value: AGGTYPE.RDVE,
+    disabled: true
+  },
+  {
+    label: '终值-起始值[+最大值]',
+    value: AGGTYPE.FSM,
+    disabled: true
+  },
+  {
+    label: '差值求和',
+    value: AGGTYPE.DSUM,
+    disabled: true,
+    isExtra: true
+  },
+  {
+    label: '累计求和',
+    value: AGGTYPE.ACC,
+    disabled: true,
+    isExtra: true
+  },
+  {
+    label: '定积分',
+    value: AGGTYPE.DIF,
+    disabled: true,
+    isExtra: true
+  },
+]
+
 export enum ReportType {
   /**日报 */
   Daily = 1,
