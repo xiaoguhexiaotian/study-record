@@ -23,6 +23,28 @@
         />
       </template>
     </HelloWorld> -->
+    <div v-for="i in 10" :key="i">
+      <el-cascader
+        :value="value"
+        :options="options"
+        :props="{ multiple: true }"
+        :clearable="false"
+        :show-all-levels="false"
+      >
+        <template slot-scope="{ node, data }">
+          <div v-if="node.level !== 1">
+            <el-checkbox v-model="node.checked">
+              <span @click="getCurrentNode(node)">{{ data.label }}</span>
+            </el-checkbox>
+          </div>
+          <el-tooltip v-else-if="data.disabled" placemeny="top" :open-delay="300">
+            <div slot="content">禁用</div>
+            <span @click="getCurrentNode(node)">{{ data.label }}</span>
+          </el-tooltip>
+          <span v-else @click="getCurrentNode(node)">{{ data.label }}</span>
+        </template>
+      </el-cascader>
+    </div>
   </div>
 </template>
 
@@ -30,7 +52,7 @@
 import { Component, Vue, Provide, Watch, Ref } from "vue-property-decorator";
 import HelloWorld from "@/components/HelloWorld.vue";
 import Cascader from "@/components/cascader/index.vue";
-import { SceneType, testArray } from "@/components/cascader/constant";
+import { SceneType, testArray, windowsParamOptions } from "@/components/cascader/constant";
 import { PointWindowParam } from "@/components/cascader/constant";
 import { getPointWindowParamList, handlePointWindowParam } from "@/components/cascader/utils";
 @Component({
@@ -113,5 +135,54 @@ export default class HomeView extends Vue {
     // });
     console.log(res, testArray, uniqueData);
   }
+  options = windowsParamOptions;
+  value: any = [];
+  getCurrentNode(node: any) {
+    if (node.data.disabled || node.children.length > 0) {
+      return;
+    }
+    if (!node.parent && node.children.length === 0) {
+      this.value = [node.value];
+    }
+    if (node.parent) {
+      let tempData: any = [];
+      const length = this.value.length;
+      if (length > 0) {
+        const firstValue = this.value[0];
+        if (typeof firstValue == "string") {
+          tempData = [[node.parent.value, node.value]];
+        }
+        if (Array.isArray(firstValue)) {
+          const multipleType = firstValue[0];
+          if (multipleType == node.parent.value) {
+            const selected = this.value.filter((arr: string | any[]) => {
+              arr.includes(node.value);
+            });
+            if (selected.length === 0) {
+              tempData = [...this.value, [node.parent.value, node.value]];
+            } else {
+              tempData = this.value.filter((arr: string | any[]) => !arr.includes(node.value));
+            }
+          }
+        } else {
+          tempData = [[node.parent.vlaue, node.value]];
+        }
+      }
+    }
+    console.log(node, 111111111);
+  }
 }
 </script>
+<style lang="scss">
+.home {
+  .el-cascader {
+    width: 80px;
+    .el-input {
+      background-color: red;
+      .el-input__inner {
+        height: 20px !important;
+      }
+    }
+  }
+}
+</style>
