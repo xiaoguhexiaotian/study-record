@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="home" @mousedown.stop>
     <!-- father:
     <button @click="fatherBtn">父组件按钮</button>
     <button @click="fatherHandleEdit">从父组件修改list</button> -->
@@ -23,35 +23,14 @@
         />
       </template>
     </HelloWorld> -->
-    <div v-for="i in 10" :key="i">
-      <el-cascader
-        :value="value"
-        :options="options"
-        :props="{ multiple: true }"
-        :clearable="false"
-        :show-all-levels="false"
-      >
-        <template slot-scope="{ node, data }">
-          <div v-if="node.level !== 1">
-            <el-checkbox v-model="node.checked">
-              <span @click="getCurrentNode(node)">{{ data.label }}</span>
-            </el-checkbox>
-          </div>
-          <el-tooltip v-else-if="data.disabled" placemeny="top" :open-delay="300">
-            <div slot="content">禁用</div>
-            <span @click="getCurrentNode(node)">{{ data.label }}</span>
-          </el-tooltip>
-          <span v-else @click="getCurrentNode(node)">{{ data.label }}</span>
-        </template>
-      </el-cascader>
-    </div>
+    <Cascader />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Provide, Watch, Ref } from "vue-property-decorator";
 import HelloWorld from "@/components/HelloWorld.vue";
-import Cascader from "@/components/cascader/index.vue";
+import Cascader from "@/components/eventStop/cascader.vue";
 import { SceneType, testArray, windowsParamOptions } from "@/components/cascader/constant";
 import { PointWindowParam } from "@/components/cascader/constant";
 import { getPointWindowParamList, handlePointWindowParam } from "@/components/cascader/utils";
@@ -96,7 +75,7 @@ export default class HomeView extends Vue {
   //   console.log("父beforeCreate");
   // }
   created() {
-    this.InitPointWindowParam();
+    // this.InitPointWindowParam();
   }
   // beforeMount() {
   //   console.log("父beforeMount");
@@ -175,14 +154,7 @@ export default class HomeView extends Vue {
 </script>
 <style lang="scss">
 .home {
-  .el-cascader {
-    width: 80px;
-    .el-input {
-      background-color: red;
-      .el-input__inner {
-        height: 20px !important;
-      }
-    }
-  }
+  height: 600px;
+  background-color: red;
 }
 </style>
